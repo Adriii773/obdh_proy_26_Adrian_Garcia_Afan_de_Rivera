@@ -133,7 +133,7 @@ tc_accept_report_t pus_service1_tc_acceptation(tc_handler_t *ptc_handler) {
 							case (2): // Delete
 							case (4): // Enable
 							case (5): // Disable
-								break; // <--- Si no pones este break, cae al default y da error
+								break; //
 							default:
 								accept_report.accept_status = TCAcceptationSubTypeError;
 							}

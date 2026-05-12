@@ -33,7 +33,7 @@
 
 void pus_service129_exec_TC_129_1(tc_handler_t *ptc_handler) {
 
-	error_code_t error=0;
+	error_code_t error;
 
 	float FP_x, FP_y, FP_z;
 
@@ -83,11 +83,10 @@ void pus_service129_exec_TC_129_2(tc_handler_t *ptc_handler) {
 	float Ki;
 	float Kd;
 
-	// TODO 17 Part1 TC -> Kp use tc_handler_get_float_appdata_field
+		error = tc_handler_get_float_appdata_field(ptc_handler, &Kp);
+		error += tc_handler_get_float_appdata_field(ptc_handler, &Ki);
+		error += tc_handler_get_float_appdata_field(ptc_handler, &Kd);
 
-	// TODO 17 Part1 TC -> Ki use tc_handler_get_float_appdata_field
-
-	// TODO 17 Part1 TC -> Kd use tc_handler_get_float_appdata_field
 
 	if (error) {
 
