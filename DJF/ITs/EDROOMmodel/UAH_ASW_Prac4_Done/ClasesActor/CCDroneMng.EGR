@@ -5,8 +5,8 @@
 0
 0
 [Modificado]
-0
-0
+1
+1
 0
 [Estructura]
 [Version Estructura]
@@ -240,7 +240,7 @@ DSubEst
 247 328 183 277 3
 [FinGraficoRama]
 [Transiciones]
-4
+5
 [Version Transicion]
 5
 Init
@@ -335,6 +335,29 @@ true
 0
 535 422 531 271 3
 [FinGraficoTransicion]
+ExecTCInFlight
+FlightPlan
+OSubEst
+FlightPlan
+DSubEst
+;
+[Trigger]
+DataHandler
+SDroneTC
+true
+ 
+ 
+ 
+FExecDroneTC();
+;
+;
+0
+;
+[GraficoTransicion]
+[Version GraficoTransicion]
+0
+465 482 251 482 5
+[FinGraficoTransicion]
 [VariablesConstantes]
 1
 [Version VariYConst]
@@ -366,14 +389,15 @@ FExecDroneTC()
 0
 1
  
-1
+2
+
 varSDroneTC.ExecDroneTC();
 [ServiceRequest]
 Msg->data
 DataHandler
 SDroneTC
 CDTCHandler
-EDROOMprioVeryHigh
+
 BasicAction
 FFlightCtrlAlgorithm()
 0
