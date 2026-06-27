@@ -134,7 +134,10 @@ void CDTCHandler::ExecRebootTC() {
 
 		switch (type) {
 
-
+		case (128):
+					// Llamada a la función que ejecuta el servicio 128
+				pus_service128_exec_tc(&mTCHandler);
+		break;
 
 		default:
 			//No defined code for this TC. ASW design error

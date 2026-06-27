@@ -46,6 +46,7 @@
 #include "public/pus_service02.h"
 #include "public/pus_service03.h"
 #include "public/pus_service129.h"
+#include "public/pus_service128.h"
 
 
 //TODO 10 Part2 include pus_service04.h only if ST[04] has been integrated

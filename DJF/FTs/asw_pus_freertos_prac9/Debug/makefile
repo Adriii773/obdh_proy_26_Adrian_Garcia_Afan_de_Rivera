@@ -17,6 +17,7 @@ RM := rm -rf
 -include service_libraries/pus_services/pus_service19/src/subdir.mk
 -include service_libraries/pus_services/pus_service17/src/subdir.mk
 -include service_libraries/pus_services/pus_service129/src/subdir.mk
+-include service_libraries/pus_services/pus_service128/src/subdir.mk
 -include service_libraries/pus_services/pus_service12/src/subdir.mk
 -include service_libraries/pus_services/pus_service05/src/subdir.mk
 -include service_libraries/pus_services/pus_service03/src/subdir.mk
@@ -101,7 +102,7 @@ main-build: it_asw_ccdronemng_freertos_hito3
 it_asw_ccdronemng_freertos_hito3: $(OBJS) $(USER_OBJS) makefile $(OPTIONAL_TOOL_DEPS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C++ Linker'
-	g++  -o "it_asw_ccdronemng_freertos_hito3" $(OBJS) $(USER_OBJS) $(LIBS) -lpthread
+	g++ -ftest-coverage -fprofile-arcs -o "it_asw_ccdronemng_freertos_hito3" $(OBJS) $(USER_OBJS) $(LIBS) -lpthread
 	@echo 'Finished building target: $@'
 	@echo ' '
 
