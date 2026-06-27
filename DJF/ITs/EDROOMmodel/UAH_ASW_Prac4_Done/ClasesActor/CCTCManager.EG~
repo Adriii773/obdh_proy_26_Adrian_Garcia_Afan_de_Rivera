@@ -5,7 +5,7 @@
 0
 0
 [Modificado]
-0
+1
 1
 0
 [Estructura]
@@ -210,9 +210,9 @@ GAcceptTC()
 ValidTC
 DSubEst
 FMngTCAcceptation();
+
  
- 
- 
+
 ;
 ;
 ;
@@ -227,9 +227,9 @@ true
 Ready
 DSubEst
 FMngTCRejection();
+
  
- 
- 
+
 ;
 ;
 ;
@@ -250,9 +250,9 @@ GToReboot()
 Reboot
 DSubEst
 FExecRebootTC();
+
  
- 
- 
+
 ;
 ;
 ;
@@ -267,9 +267,9 @@ true
 Ready
 DSubEst
 FExecPrioTC();
+
  
- 
- 
+
 ;
 ;
 ;
@@ -284,9 +284,9 @@ GFwdToHK_FDIR()
 Ready
 DSubEst
 ;
+
  
- 
- 
+
 ;
 FFwdHK_FDIRTC();
 ;
@@ -301,9 +301,9 @@ GFwdBKGTC()
 Ready
 DSubEst
 ;
+
  
- 
- 
+
 ;
 FFwdBKGTC();
 ;
@@ -318,9 +318,9 @@ GFwdDroneTC()
 Ready
 DSubEst
 ;
+
  
- 
- 
+
 ;
 FFwdDroneTC();
 ;
@@ -341,8 +341,8 @@ Ready
 DSubEst
 FInit();
 [Trigger]
-*
-SEvAction
+EDROOMsl
+EDROOMStart
 true
  
  
@@ -387,9 +387,9 @@ HandleTC
 DPEleccion
 FTCExecCtrl();
 [Trigger]
- 
- 
- 
+
+
+
  
  
  
@@ -553,7 +553,7 @@ Msg->data
 HK_FDIRCtrl
 SEvAction
 CDEvAction
- 
+
 MsgDataHandler
 FGetTC()
 0
@@ -574,7 +574,7 @@ Msg->data
 RxTC
 EDROOMIRQsignal
 CDTCMemDescriptor
- 
+
 BasicAction
 FInit()
 0
@@ -727,8 +727,8 @@ StandBy0
 DSubEst
 ;
 [Trigger]
-*
-SEvAction
+EDROOMsl
+EDROOMStart
 true
  
  

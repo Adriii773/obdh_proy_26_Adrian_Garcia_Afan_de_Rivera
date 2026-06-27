@@ -170,9 +170,9 @@ true
 FlightPlan
 DSubEst
 FProgNextCtrl();
+
  
- 
- 
+
 ;
 ;
 ;
@@ -187,9 +187,9 @@ GFlightPlanDone()
 Ready
 DSubEst
 FToReady();
+
  
- 
- 
+
 ;
 ;
 ;
@@ -210,9 +210,9 @@ GExecFlightPlan()
 FlightPlan
 DSubEst
 FInitFlightPlan();
+
  
- 
- 
+
 ;
 ;
 ;
@@ -227,9 +227,9 @@ true
 Ready
 DSubEst
 ;
+
  
- 
- 
+
 ;
 ;
 ;
@@ -390,14 +390,14 @@ FExecDroneTC()
 1
  
 2
-
+ 
 varSDroneTC.ExecDroneTC();
 [ServiceRequest]
 Msg->data
 DataHandler
 SDroneTC
 CDTCHandler
-
+EDROOMprioVeryHigh
 BasicAction
 FFlightCtrlAlgorithm()
 0
@@ -423,7 +423,7 @@ Msg->data
 DataHandler
 SDroneSetUp
 CDDroneConfig
-EDROOMprioVeryHigh
+EDROOMprioNormal
 Inform
 FInitFlightPlan()
 0
@@ -441,7 +441,7 @@ time = VNextCtrl;
 InformAt
 DroneTimer
 EDROOMSignalTimeout
-CDDroneConfig
+CDTCHandler
 EDROOMprioVeryHigh
 Inform
 FProgNextCtrl()
@@ -458,7 +458,7 @@ time = VNextCtrl;
 InformAt
 DroneTimer
 EDROOMSignalTimeout
-CDDroneConfig
+CDTCHandler
 EDROOMprioVeryHigh
 ReplyMsg
 FReplyDroneReady()
