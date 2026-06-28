@@ -29,6 +29,7 @@ RM := rm -rf
 -include service_libraries/drone_flight_pid_ctrl/src/subdir.mk
 -include service_libraries/crc/src/subdir.mk
 -include service_libraries/ccsds_pus/src/subdir.mk
+-include service_libraries/subdir.mk
 -include llsw/tmtc_dyn_mem/src/subdir.mk
 -include llsw/tc_rate_ctrl/src/subdir.mk
 -include llsw/tc_queue_drv/src/subdir.mk
@@ -54,7 +55,6 @@ RM := rm -rf
 -include asw/components/cchk_fdirmng/src/subdir.mk
 -include asw/components/ccdronemng/src/subdir.mk
 -include asw/components/ccbkgtcexec/src/subdir.mk
--include subdir.mk
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(strip $(C++_DEPS)),)
 -include $(C++_DEPS)

@@ -69,5 +69,5 @@ service_libraries/pus_services/pus_tc_handler/src \
 service_libraries/pus_services/pus_tm_handler/src \
 service_libraries/pus_services/src \
 service_libraries/serialize/src \
-. \
+service_libraries \
 
