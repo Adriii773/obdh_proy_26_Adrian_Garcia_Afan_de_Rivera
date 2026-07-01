@@ -16,6 +16,7 @@
 #include <public/cdtcexecctrl_iface_v1.h>
 #include <public/cdtchandler_iface_v1.h>
 #include <public/cdtcmemdescriptor_iface_v1.h>
+#include <public/cddroneconfig_iface_v1.h>
 
 
 //******************************************************************************
@@ -40,6 +41,9 @@ public:
 	 */
 	 enum TEDROOMCCTCManagerSignal { EDROOMSignalTimeout, 
 							EDROOMSignalDestroy, 
+							SDroneTC, 
+							SDroneSetUp, 
+							SDronerReady, 
 							SBKGTC, 
 							EDROOMIRQsignal, 
 							SHK_FDIR_TC, 
@@ -67,6 +71,10 @@ public:
 			CDTCHandler	poolCDTCHandler[10+1];
 			//! CDTCHandler Data Pool Marks Memory
 			bool	poolMarkCDTCHandler[10];
+			//! CDDroneConfig Data Pool Memory
+			CDDroneConfig	poolCDDroneConfig[2+1];
+			//! CDDroneConfig Data Pool Marks Memory
+			bool	poolMarkCDDroneConfig[2];
 
 
 			/** \brief This function is used for setting the Component Memory
@@ -92,6 +100,8 @@ public:
 	//******************  Component Communication Ports *******************
 	// ********************************************************************
 
+	//! DroneMngCtrl Component Port
+	CEDROOMInterface	DroneMngCtrl;
 	//! BKGExecCtrl Component Port
 	CEDROOMInterface	BKGExecCtrl;
 	//! HK_FDIRCtrl Component Port
@@ -209,6 +219,9 @@ public:
 	 */
 	enum TEDROOMCCTCManagerSignal { EDROOMSignalTimeout,
 		EDROOMSignalDestroy,
+		SDroneTC,
+		SDroneSetUp,
+		SDronerReady,
 		SBKGTC,
 		EDROOMIRQsignal,
 		SHK_FDIR_TC,
@@ -227,6 +240,7 @@ public:
 		CEDROOMMessage * &MsgBack;
 
 		//!Component ports
+		CEDROOMInterface & DroneMngCtrl;
 		CEDROOMInterface & BKGExecCtrl;
 		CEDROOMInterface & HK_FDIRCtrl;
 		CEDROOMIRQInterface & RxTC;
@@ -247,6 +261,7 @@ public:
 			HandleTC_ToReboot,
 			HandleTC_FwdHK_FDIRTC,
 			HandleTC_FwdBKGTC,
+			HandleTC_FFwdDroneTC,
 			HandleTC_ExecPrioTC,
 			NewEvAction,
 			EDROOMMemoryTrans };
@@ -267,6 +282,12 @@ public:
 			CDTCHandler	* AllocData();
 		};
 		CEDROOMPOOLCDTCHandler	& EDROOMPoolCDTCHandler;
+		class CEDROOMPOOLCDDroneConfig:public CEDROOMProtectedMemoryPool {
+			public:
+			CEDROOMPOOLCDDroneConfig(TEDROOMUInt32 elemCount,CDDroneConfig *pMem, bool *pMarks);
+			CDDroneConfig	* AllocData();
+		};
+		CEDROOMPOOLCDDroneConfig	& EDROOMPoolCDDroneConfig;
 
 
 		//!Constructor
@@ -274,7 +295,8 @@ public:
 				CDTCAcceptReport & EDROOMpVarVAcceptReport,
 				CDTCHandler & EDROOMpVarVCurrentTC,
 				CDTCExecCtrl & EDROOMpVarVTCExecCtrl,
-				CEDROOMPOOLCDTCHandler & EDROOMpPoolCDTCHandler );
+				CEDROOMPOOLCDTCHandler & EDROOMpPoolCDTCHandler,
+				CEDROOMPOOLCDDroneConfig & EDROOMpPoolCDDroneConfig );
 
 		//!Copy constructor
 		EDROOM_CTX_Top_0 (EDROOM_CTX_Top_0 &context);
@@ -318,6 +340,11 @@ public:
 		 * \brief  
 		 */
 		void	FFwdBKGTC();
+
+		/**
+		 * \brief  
+		 */
+		void	FFwdDroneTC();
 
 		/**
 		 * \brief  
@@ -372,12 +399,115 @@ public:
 		/**
 		 * \brief  
 		 */
+		bool	GFwdDroneTC();
+
+		/**
+		 * \brief  
+		 */
 		bool	GFwdToHK_FDIR();
 
 		/**
 		 * \brief  
 		 */
 		bool	GToReboot();
+
+	};
+
+	// ***********************************************************************
+
+	// class EDROOM_CTX_Ready_1
+
+	// ***********************************************************************
+
+
+
+	class EDROOM_CTX_Ready_1 : public EDROOM_CTX_Top_0 {
+
+	protected:
+
+		//! State Identifiers
+		enum TEDROOMStateID{StandBy0};
+
+		//!Transition Identifiers
+		enum TEDROOMTransitionID{Transicion0,
+			EDROOMMemoryTrans };
+
+
+
+
+
+		//!Constructor
+
+		EDROOM_CTX_Ready_1( EDROOM_CTX_Top_0 &context );
+
+		//!Copy constructor
+
+		EDROOM_CTX_Ready_1( EDROOM_CTX_Ready_1 &context );
+
+	public:
+
+		/**
+		 * \brief Search Context transition 
+		 * \param edroomCurrentTrans returns the context transition
+
+		 * \return true if context transition is found
+
+		 */
+		bool EDROOMSearchContextTrans(TEDROOMTransId &edroomCurrentTrans);
+
+		// User-defined Functions
+
+		/**
+		 * \brief  
+		 */
+		void	FInvokeDroneSetUp();
+
+	};
+
+	// ***********************************************************************
+
+	// class EDROOM_SUB_Ready_1
+
+	// ***********************************************************************
+
+
+
+	class EDROOM_SUB_Ready_1:public EDROOM_CTX_Ready_1{ 
+
+	protected:
+
+
+
+		//!current state identifier
+		EDROOM_CTX_Ready_1::TEDROOMStateID edroomCurrentState;
+
+		//!next state identifier
+		EDROOM_CTX_Ready_1::TEDROOMStateID edroomNextState;
+
+	public:
+
+		EDROOM_CTX_Top_0::TEDROOMStateID edroomStateID;
+
+		//!Constructor
+		EDROOM_SUB_Ready_1(EDROOM_CTX_Top_0::TEDROOMStateID stateID, EDROOM_CTX_Top_0 &context);
+
+		//!Context Arrival
+
+		TEDROOMTransId Arrival(EDROOM_CTX_Top_0::TEDROOMTransitionID);
+
+		//! Context Init
+
+		void EDROOMInit();
+
+		// ***********************************************************************
+
+		// Leaf SubState StandBy0
+
+		// ***********************************************************************
+
+
+
+		TEDROOMTransId EDROOMStandBy0Arrival();
 
 	};
 
@@ -393,6 +523,7 @@ public:
 
 	protected:
 
+	EDROOM_SUB_Ready_1 EDROOMReady;
 
 
 		//!current state identifier
@@ -409,6 +540,7 @@ public:
 
 		// Pools**************************************************
 		CEDROOMPOOLCDTCHandler	EDROOMPoolCDTCHandler;
+		CEDROOMPOOLCDDroneConfig	EDROOMPoolCDDroneConfig;
 
 
 	public:
@@ -436,16 +568,6 @@ public:
 
 
 		TEDROOMTransId EDROOMValidTCArrival();
-
-		// ***********************************************************************
-
-		// Leaf SubState Ready
-
-		// ***********************************************************************
-
-
-
-		TEDROOMTransId EDROOMReadyArrival();
 
 		// ***********************************************************************
 

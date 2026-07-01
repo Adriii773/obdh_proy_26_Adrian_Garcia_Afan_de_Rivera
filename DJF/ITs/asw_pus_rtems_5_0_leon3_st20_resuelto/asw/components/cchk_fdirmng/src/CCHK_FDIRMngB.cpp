@@ -81,7 +81,7 @@ time=VNextTimeout;
 // Lo que ya venía de fábrica:
 pus_services_update_params();
  
-pus_service4_update_all_stats();
+//pus_service4_update_all_stats();
  
 pus_service3_do_HK();
  
@@ -113,7 +113,7 @@ void	CCHK_FDIRMng::EDROOM_CTX_Top_0::FFwdEvAction()
 
 {
 
-
+ 
     // Allocate data from pool
     CDEvAction * pSEvAction_Data = EDROOMPoolCDEvAction.AllocData();
     
@@ -122,7 +122,7 @@ void	CCHK_FDIRMng::EDROOM_CTX_Top_0::FFwdEvAction()
     
     // Send message
     HK_FDIRCtrl.send(SEvAction, pSEvAction_Data, &EDROOMPoolCDEvAction);
-
+ 
 
 }
 
@@ -149,7 +149,7 @@ bool	CCHK_FDIRMng::EDROOM_CTX_Top_0::GPendingEvAction()
 
 {
 
-
+ 
     return (pus_service19_pending_ev_actions());
 
 }

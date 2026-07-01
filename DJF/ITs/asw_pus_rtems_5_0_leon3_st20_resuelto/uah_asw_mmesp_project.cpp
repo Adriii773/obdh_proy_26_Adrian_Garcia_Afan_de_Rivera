@@ -12,6 +12,7 @@
 #include <public/cctcmanager_iface_v1.h>
 #include <public/cchk_fdirmng_iface_v1.h>
 #include <public/ccbkgtcexec_iface_v1.h>
+#include <public/ccdronemng_iface_v1.h>
  
 #ifdef CONFIG_EDROOMBP_DEPLOYMENT_NEED_TASK
  
@@ -21,7 +22,7 @@
  
  
  
-extern "C" rtems_task Init (uint32_t arg){
+int main (void){
  
  
  
@@ -33,14 +34,15 @@ extern "C" rtems_task Init (uint32_t arg){
  
  
 	UAH_ASW	comp1(1, 13, EDROOMprioNormal, 1024, systemDeployment.GetComp1Memory());
-	CCTCManager	comp2(2, 10, EDROOMprioHigh, 4096, systemDeployment.GetComp2Memory());
+	CCTCManager	comp2(2, 11, EDROOMprioHigh, 4096, systemDeployment.GetComp2Memory());
 	CCHK_FDIRMng	comp3(3, 13, EDROOMprioNormal, 4096, systemDeployment.GetComp3Memory());
 	CCBKGTCExec	comp4(4, 10, EDROOMprioNormal, 1024, systemDeployment.GetComp4Memory());
+	CCDroneMng	comp5(5, 13, EDROOMprioNormal, 1024, systemDeployment.GetComp5Memory());
  
-	systemDeployment.Config(&comp1, &comp2, &comp3, &comp4);
+	systemDeployment.Config(&comp1, &comp2, &comp3, &comp4, &comp5);
  
 	systemDeployment.Start();
  
-	;
+	return 0;
  
 }

@@ -14,18 +14,21 @@ CCTCManager::EDROOM_CTX_Top_0::EDROOM_CTX_Top_0(CCTCManager &act,
 	 CDTCAcceptReport & EDROOMpVarVAcceptReport,
 	 CDTCHandler & EDROOMpVarVCurrentTC,
 	 CDTCExecCtrl & EDROOMpVarVTCExecCtrl,
-	 CEDROOMPOOLCDTCHandler & EDROOMpPoolCDTCHandler ):
+	 CEDROOMPOOLCDTCHandler & EDROOMpPoolCDTCHandler,
+	 CEDROOMPOOLCDDroneConfig & EDROOMpPoolCDDroneConfig ):
 
 	EDROOMcomponent(act),
 	Msg(EDROOMcomponent.Msg),
 	MsgBack(EDROOMcomponent.MsgBack),
+	DroneMngCtrl(EDROOMcomponent.DroneMngCtrl),
 	BKGExecCtrl(EDROOMcomponent.BKGExecCtrl),
 	HK_FDIRCtrl(EDROOMcomponent.HK_FDIRCtrl),
 	RxTC(EDROOMcomponent.RxTC),
 	VAcceptReport(EDROOMpVarVAcceptReport),
 	VCurrentTC(EDROOMpVarVCurrentTC),
 	VTCExecCtrl(EDROOMpVarVTCExecCtrl),
-	EDROOMPoolCDTCHandler(EDROOMpPoolCDTCHandler)
+	EDROOMPoolCDTCHandler(EDROOMpPoolCDTCHandler),
+	EDROOMPoolCDDroneConfig(EDROOMpPoolCDDroneConfig)
 {
 }
 
@@ -34,13 +37,15 @@ CCTCManager::EDROOM_CTX_Top_0::EDROOM_CTX_Top_0(EDROOM_CTX_Top_0 &context):
 	EDROOMcomponent(context.EDROOMcomponent),
 	Msg(context.Msg),
 	MsgBack(context.MsgBack),
+	DroneMngCtrl(context.DroneMngCtrl),
 	BKGExecCtrl(context.BKGExecCtrl),
 	HK_FDIRCtrl(context.HK_FDIRCtrl),
 	RxTC(context.RxTC),
 	VAcceptReport(context.VAcceptReport),
 	VCurrentTC(context.VCurrentTC),
 	VTCExecCtrl(context.VTCExecCtrl),
-	EDROOMPoolCDTCHandler(context.EDROOMPoolCDTCHandler )
+	EDROOMPoolCDTCHandler(context.EDROOMPoolCDTCHandler ),
+	EDROOMPoolCDDroneConfig(context.EDROOMPoolCDDroneConfig )
 {
 
 }
@@ -102,6 +107,24 @@ void	CCTCManager::EDROOM_CTX_Top_0::FFwdBKGTC()
 	*pSBKGTC_Data=VCurrentTC;
    //Send message 
    BKGExecCtrl.send(SBKGTC,pSBKGTC_Data,&EDROOMPoolCDTCHandler); 
+}
+
+
+
+void	CCTCManager::EDROOM_CTX_Top_0::FFwdDroneTC()
+
+{
+   //Allocate data from pool
+  CDTCHandler * pSDroneTC_Data = EDROOMPoolCDTCHandler.AllocData();
+	
+		// Complete Data 
+	
+ 
+ 
+ 
+*pSDroneTC_Data = VCurrentTC;
+   //Send message 
+   DroneMngCtrl.send(SDroneTC,pSDroneTC_Data,&EDROOMPoolCDTCHandler); 
 }
 
 
@@ -235,6 +258,16 @@ return VTCExecCtrl.IsBKGTC();
 
 
 
+bool	CCTCManager::EDROOM_CTX_Top_0::GFwdDroneTC()
+
+{
+
+return VTCExecCtrl.IsDroneTC();
+
+}
+
+
+
 bool	CCTCManager::EDROOM_CTX_Top_0::GFwdToHK_FDIR()
 
 {
@@ -255,6 +288,105 @@ return VTCExecCtrl.IsRebootTC();
 
 
 
+// ***********************************************************************
+
+// class EDROOM_CTX_Ready_1
+
+// ***********************************************************************
+
+
+
+	// CONSTRUCTORS***********************************************
+
+CCTCManager::EDROOM_CTX_Ready_1::EDROOM_CTX_Ready_1(EDROOM_CTX_Top_0 &context):
+	EDROOM_CTX_Top_0(context)
+{
+
+}
+
+CCTCManager::EDROOM_CTX_Ready_1::EDROOM_CTX_Ready_1(
+	EDROOM_CTX_Ready_1 &context ):
+		EDROOM_CTX_Top_0(context)
+{
+
+}
+
+	// EDROOMSearchContextTrans********************************************
+
+bool CCTCManager::EDROOM_CTX_Ready_1::EDROOMSearchContextTrans(
+			TEDROOMTransId &edroomCurrentTrans)
+			{
+
+	bool edroomValidMsg = false; 
+
+	 switch(Msg->signal)
+	 {
+
+		// Check trigger for signal EDROOMIRQsignal
+
+		 case (EDROOMIRQsignal): 
+
+				if (*Msg->GetPInterface() == RxTC)
+				{
+
+					 edroomValidMsg=true;
+					edroomCurrentTrans.localId = EDROOM_CTX_Top_0::NewRxTC;
+					edroomCurrentTrans.distanceToContext = 1 ;
+				 }
+
+			 break;
+
+		// Check trigger for signal SEvAction
+
+		 case (SEvAction): 
+
+				if (*Msg->GetPInterface() == HK_FDIRCtrl)
+				{
+
+					 edroomValidMsg=true;
+					edroomCurrentTrans.localId = EDROOM_CTX_Top_0::NewEvAction;
+					edroomCurrentTrans.distanceToContext = 1 ;
+				 }
+
+			 break;
+
+	}
+
+	if (false == edroomValidMsg)
+	{
+
+		 edroomValidMsg = 
+			EDROOM_CTX_Top_0::EDROOMSearchContextTrans(edroomCurrentTrans);
+		 if (edroomValidMsg)
+		 {
+			edroomCurrentTrans.distanceToContext++;
+		 }
+
+	}
+
+	return(edroomValidMsg);
+
+}
+
+	// User-defined Functions   ****************************
+
+void	CCTCManager::EDROOM_CTX_Ready_1::FInvokeDroneSetUp()
+
+{
+   //Allocate data from pool
+  CDDroneConfig * pSDroneSetUp_Data = EDROOMPoolCDDroneConfig.AllocData();
+	
+pSDroneSetUp_Data->ZMinBeforeAdvance=10;
+pSDroneSetUp_Data->DefaultKp=0.2;
+pSDroneSetUp_Data->DefaultKi=0.15;
+pSDroneSetUp_Data->DefaultKd=0.05;
+   //Invoke synchronous communication 
+   MsgBack=DroneMngCtrl.invoke(SDroneSetUp,pSDroneSetUp_Data,
+                                                     &EDROOMPoolCDDroneConfig); 
+}
+
+
+
 	//********************************** Pools *************************************
 
 	//CEDROOMPOOLCDTCHandler
@@ -269,6 +401,20 @@ CCTCManager::EDROOM_CTX_Top_0::CEDROOMPOOLCDTCHandler::CEDROOMPOOLCDTCHandler(
 CDTCHandler *	CCTCManager::EDROOM_CTX_Top_0::CEDROOMPOOLCDTCHandler::AllocData()
 {
 	return(CDTCHandler*)CEDROOMProtectedMemoryPool::AllocData();
+}
+
+	//CEDROOMPOOLCDDroneConfig
+
+CCTCManager::EDROOM_CTX_Top_0::CEDROOMPOOLCDDroneConfig::CEDROOMPOOLCDDroneConfig(
+			TEDROOMUInt32 elemCount,CDDroneConfig* pMem,bool * pMemMarks):
+				CEDROOMProtectedMemoryPool(elemCount, pMem, pMemMarks,
+					sizeof(CDDroneConfig))
+{
+}
+
+CDDroneConfig *	CCTCManager::EDROOM_CTX_Top_0::CEDROOMPOOLCDDroneConfig::AllocData()
+{
+	return(CDDroneConfig*)CEDROOMProtectedMemoryPool::AllocData();
 }
 
 
@@ -289,10 +435,15 @@ CCTCManager::EDROOM_SUB_Top_0::EDROOM_SUB_Top_0 (CCTCManager&act
 			VAcceptReport,
 			VCurrentTC,
 			VTCExecCtrl,
-			EDROOMPoolCDTCHandler),
+			EDROOMPoolCDTCHandler,
+			EDROOMPoolCDDroneConfig),
+		EDROOMReady(Ready , *this),
 		EDROOMPoolCDTCHandler(
 			10, pEDROOMMemory->poolCDTCHandler,
-			pEDROOMMemory->poolMarkCDTCHandler)
+			pEDROOMMemory->poolMarkCDTCHandler),
+		EDROOMPoolCDDroneConfig(
+			2, pEDROOMMemory->poolCDDroneConfig,
+			pEDROOMMemory->poolMarkCDDroneConfig)
 {
 
 }
@@ -406,6 +557,19 @@ void CCTCManager::EDROOM_SUB_Top_0::EDROOMBehaviour()
 					//Next State is Ready
 					edroomNextState = Ready;
 				 } 
+				//Evaluate Branch FFwdDroneTC
+				else if( GFwdDroneTC() )
+				{
+					//Send Asynchronous Message 
+					FFwdDroneTC();
+
+					//Branch taken is HandleTC_FFwdDroneTC
+					edroomCurrentTrans.localId =
+						HandleTC_FFwdDroneTC;
+
+					//Next State is Ready
+					edroomNextState = Ready;
+				 } 
 				//Default Branch ExecPrioTC
 				else
 				{
@@ -435,7 +599,8 @@ void CCTCManager::EDROOM_SUB_Top_0::EDROOMBehaviour()
 				//Go to the state Ready
 			case (Ready):
 				//Arrival to state Ready
-				edroomCurrentTrans=EDROOMReadyArrival();
+				edroomCurrentTrans=EDROOMReady.Arrival(
+				(TEDROOMTransitionID) edroomCurrentTrans.localId);
 				break;
 
 				//Go to the state Reboot
@@ -467,6 +632,7 @@ void CCTCManager::EDROOM_SUB_Top_0::EDROOMBehaviour()
 void CCTCManager::EDROOM_SUB_Top_0::EDROOMInit()
 {
 
+EDROOMReady.EDROOMInit();
 edroomCurrentState=I;
 
 }
@@ -519,13 +685,13 @@ TEDROOMTransId CCTCManager::EDROOM_SUB_Top_0::EDROOMValidTCArrival()
 
 	// ***********************************************************************
 
-	// Leaf SubState  Ready
+	// Leaf SubState  Reboot
 
 	// ***********************************************************************
 
 
 
-TEDROOMTransId CCTCManager::EDROOM_SUB_Top_0::EDROOMReadyArrival()
+TEDROOMTransId CCTCManager::EDROOM_SUB_Top_0::EDROOMRebootArrival()
 {
 
 	TEDROOMTransId edroomCurrentTrans;
@@ -536,37 +702,6 @@ TEDROOMTransId CCTCManager::EDROOM_SUB_Top_0::EDROOMReadyArrival()
 	{
 
 		EDROOMNewMessage ();
-
-		switch(Msg->signal)
-		{
-
-			case (EDROOMIRQsignal): 
-
-				 if (*Msg->GetPInterface() == RxTC)
-				{
-
-					//Next transition is  NewRxTC
-					edroomCurrentTrans.localId = NewRxTC;
-					edroomCurrentTrans.distanceToContext = 0 ;
-					edroomValidMsg=true;
-				 }
-
-				break;
-
-			case (SEvAction): 
-
-				 if (*Msg->GetPInterface() == HK_FDIRCtrl)
-				{
-
-					//Next transition is  NewEvAction
-					edroomCurrentTrans.localId= NewEvAction;
-					edroomCurrentTrans.distanceToContext = 0;
-					edroomValidMsg=true;
-				 }
-
-				break;
-
-		};
 
 		if (false == edroomValidMsg)
 		{
@@ -582,15 +717,120 @@ TEDROOMTransId CCTCManager::EDROOM_SUB_Top_0::EDROOMReadyArrival()
 
 
 
+// ***********************************************************************
+
+// class EDROOM_SUB_Ready_1
+
+// ***********************************************************************
+
+
+
+	// CONSTRUCTOR*************************************************
+
+CCTCManager::EDROOM_SUB_Ready_1::EDROOM_SUB_Ready_1(
+	EDROOM_CTX_Top_0::TEDROOMStateID stateID, 
+	EDROOM_CTX_Top_0 &context):
+		EDROOM_CTX_Ready_1(context)
+{
+	edroomStateID =stateID; 
+}
+
+	// llegada**********************************************
+
+TEDROOMTransId CCTCManager::EDROOM_SUB_Ready_1::Arrival(
+	EDROOM_CTX_Top_0::TEDROOMTransitionID arrivingTrans)
+{
+
+	TEDROOMTransId edroomCurrentTrans;
+
+	//Transition at Context Entry
+	switch (arrivingTrans)
+	{
+
+		case (EDROOM_CTX_Top_0::NewRxTC_NotAccepted):
+			//Memory Entry 
+			edroomCurrentTrans.localId = EDROOMMemoryTrans ;
+			edroomNextState = edroomCurrentState;
+			break;
+		case (EDROOM_CTX_Top_0::HandleTC_ExecPrioTC):
+			//Memory Entry 
+			edroomCurrentTrans.localId = EDROOMMemoryTrans ;
+			edroomNextState = edroomCurrentState;
+			break;
+		case (EDROOM_CTX_Top_0::HandleTC_FwdHK_FDIRTC):
+			//Memory Entry 
+			edroomCurrentTrans.localId = EDROOMMemoryTrans ;
+			edroomNextState = edroomCurrentState;
+			break;
+		case (EDROOM_CTX_Top_0::HandleTC_FwdBKGTC):
+			//Memory Entry 
+			edroomCurrentTrans.localId = EDROOMMemoryTrans ;
+			edroomNextState = edroomCurrentState;
+			break;
+		case (EDROOM_CTX_Top_0::HandleTC_FFwdDroneTC):
+			//Memory Entry 
+			edroomCurrentTrans.localId = EDROOMMemoryTrans ;
+			edroomNextState = edroomCurrentState;
+			break;
+		//From entry point Init
+		case (EDROOM_CTX_Top_0::Init):
+			edroomCurrentTrans.localId= Transicion0;
+			edroomNextState = StandBy0;
+		//Invoke Synchronous Message 
+		FInvokeDroneSetUp();
+			break;
+		case (EDROOM_CTX_Top_0::EDROOMMemoryTrans):
+			//Memory Entry added
+			edroomCurrentTrans.localId = EDROOMMemoryTrans ;
+			edroomNextState = edroomCurrentState;
+			break;
+		default:
+			//Default is memory entry
+			edroomCurrentTrans.localId = EDROOMMemoryTrans ;
+			edroomNextState = edroomCurrentState;
+			break;
+	}
+
+		//Entry into the Next State 
+		switch(edroomNextState)
+		{
+
+				//Go to the state StandBy0
+			case (StandBy0):
+				//Arrival to state StandBy0
+				edroomCurrentTrans=EDROOMStandBy0Arrival();
+				break;
+
+		}
+
+		edroomCurrentState=edroomNextState;
+
+	edroomCurrentTrans.distanceToContext--;
+
+	return(edroomCurrentTrans);
+
+}
+
+
+
+	// Context Init**********************************************
+
+void CCTCManager::EDROOM_SUB_Ready_1::EDROOMInit()
+{
+
+}
+
+
+
 	// ***********************************************************************
 
-	// Leaf SubState  Reboot
+	// Leaf SubState  StandBy0
 
 	// ***********************************************************************
 
 
 
-TEDROOMTransId CCTCManager::EDROOM_SUB_Top_0::EDROOMRebootArrival()
+TEDROOMTransId CCTCManager::EDROOM_SUB_Ready_1::EDROOMStandBy0Arrival()
 {
 
 	TEDROOMTransId edroomCurrentTrans;

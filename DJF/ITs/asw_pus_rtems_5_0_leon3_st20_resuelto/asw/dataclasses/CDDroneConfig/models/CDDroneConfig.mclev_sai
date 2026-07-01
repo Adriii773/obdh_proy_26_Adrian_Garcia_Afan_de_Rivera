@@ -1,8 +1,8 @@
-package es.uah.aut.srg.edroom.mclev.data_sai.cdevaction;
+package es.uah.aut.srg.edroom.mclev.data_sai.cddroneconfig;
 
 inport es.uah.aut.srg.micobs.langs;
 
-sai cdevaction_iface
+sai cddroneconfig_iface
 {
 
 
